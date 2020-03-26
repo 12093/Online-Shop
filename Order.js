@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import $ from "jquery";
 import Toast from "../component/Toast";
+import Modal from "../component/Modal";
 
 class Order extends Component {
     constructor() {
@@ -15,7 +16,8 @@ class Order extends Component {
             jalan: "",
             total: "",
             bukti_bayar: null,
-            status: "dipesan",
+            detail: "",
+            status: "",
             action: "",
             message: ""
         }
@@ -45,6 +47,31 @@ class Order extends Component {
             .catch(error => {
                 console.log(error);
             });
+    }
+    Accept = (id) => {
+        if (window.confirm("Apakah anda yakin menerima produk ini?")) {
+            let url = "http://localhost/online.shop/public/accept/" + id
+            axios.post(url)
+                .then(response => {
+                    this.get_order()
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+    }
+
+    Decline = (id) => {
+        if (window.confirm("Apakah anda yakin menolak produk ini?")) {
+            let url = "http://localhost/online.shop/public/decline/" + id
+            axios.post(url)
+                .then(response => {
+                    this.get_order()
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
     }
     Drop = (id) => {
         if (window.confirm("Apakah anda yakin ingin menghapus data ini?")) {
@@ -112,6 +139,7 @@ class Order extends Component {
                                     <th>Alamat</th>
                                     <th>Total</th>
                                     <th>Payment</th>
+                                    <th>Detail Order</th>
                                     <th>Status</th>
                                     <th>Opsi</th>
                                 </tr>
@@ -126,21 +154,47 @@ class Order extends Component {
                                             <td>{item.jalan}</td>
                                             <td>{item.total}</td>
                                             <td>{item.bukti_bayar}</td>
-                                            <td>{item.status}</td>
-                                            <button className="m-1 btn btn-sm btn-info" onClick={() => this.Edit(item)}>
-                                                <span>Terima</span>
-                                            </button>
-                                            <button className="m-1 btn btn-sm btn-danger"
-                                                onClick={() => this.Drop(item.id)}>
-                                                <span>Tolak</span>
-                                            </button>
+                                            <td>
+                                                {item.detail.map((it) => {
+                                                    return (
+                                                        <ul key={it.id_order}>
+                                                            <li>{it.nama_product} ({it.quantity})</li>
+                                                        </ul>
+                                                    )
+                                                })}
+                                            </td>
 
+                                            <td>{item.status}</td>
+                                            
+                                                <button className="m-1 btn btn-sm btn-info" onClick={() => this.Accept(item.id_order)}>
+                                                    <span className="fa fa-check-circle"></span> Accept
+                                            </button>
+                                                <button className="m-1 btn btn-sm btn-danger" onClick={() => this.Decline(item.id_order)}>
+                                                    <span className="fa fa-times-circle"></span> Decline
+                                            </button>
+                                            
                                         </tr>
                                     );
                                 })}
                             </tbody>
                         </table>
-                        {/* tombol tambah */}
+                        <Modal id="modal_accept" title="Accept" bg-header="warning" text_header="white">
+                            <form onSubmit={this.Accept}>
+                                <input type="text" className="form-control" name="status" value={this.state.status} onChange={this.bind} placeholder="Status" required />
+                                <button type="submit" className="btn btn-dark m-2">
+                                    <span className="fa fa-check-circle"></span> Save
+                            </button>
+                            </form>
+                        </Modal>
+
+                        <Modal id="modal_decline" title="Decline" bg-header="warning" text_header="white">
+                            <form onSubmit={this.Decline}>
+                                <input type="text" className="form-control" name="status" value={this.state.status} onChange={this.bind} placeholder="Status" required />
+                                <button type="submit" className="btn btn-dark m-2">
+                                    <span className="fa fa-check-circle"></span> Save
+                            </button>
+                            </form>
+                        </Modal>
                     </div>
                 </div>
 
