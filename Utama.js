@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom";
 import Navbar from "./component/Navbar";
 // Load halaman
 import Cart from "./client/Cart";
+import Payment from "./client/Payment";
 import Checkout from "./client/Checkout";
 import Profil from "./client/Profil";
 import Produk from "./client/Produk";
@@ -39,6 +40,10 @@ class Utama extends Component {
         <Route path="/checkout">
           <Navbar />
           <Checkout />
+        </Route>
+        <Route path="/payment">
+          <Navbar />
+          <Payment />
         </Route>
         <Route path="/Profil">
           <Navbar />

@@ -13,6 +13,7 @@ class Order extends Component {
             id_alamat: "",
             id_user: 0,
             username: "",
+            nama_product:"",
             jalan: "",
             total: "",
             bukti_bayar: null,
@@ -50,9 +51,14 @@ class Order extends Component {
     }
     Accept = (id) => {
         if (window.confirm("Apakah anda yakin menerima produk ini?")) {
+            $("#modal_accept").modal("hide");
             let url = "http://localhost/online.shop/public/accept/" + id
+            let form = new FormData();
+            form.append("action", this.state.action);
+            form.append("status", this.state.status);
             axios.post(url)
                 .then(response => {
+                    this.setState({ message: response.data.message });
                     this.get_order()
                 })
                 .catch(error => {
@@ -63,9 +69,14 @@ class Order extends Component {
 
     Decline = (id) => {
         if (window.confirm("Apakah anda yakin menolak produk ini?")) {
+            $("#modal_decline").modal("hide");
             let url = "http://localhost/online.shop/public/decline/" + id
+            let form = new FormData();
+            form.append("action", this.state.action);
+            form.append("status", this.state.status);
             axios.post(url)
                 .then(response => {
+                    this.setState({ message: response.data.message });
                     this.get_order()
                 })
                 .catch(error => {
@@ -96,13 +107,13 @@ class Order extends Component {
     search = (event) => {
         if (event.keyCode === 13) {
             // $("#loading").toast("show");
-            let url = "http://localhost/online.shop/public/product";
+            let url = "http://localhost/online.shop/public/order";
             let form = new FormData();
             form.append("find", this.state.find);
             axios.post(url, form)
                 .then(response => {
                     $("#loading").toast("hide");
-                    this.setState({ product: response.data.product });
+                    this.setState({ order: response.data.order });
                 })
                 .catch(error => {
                     console.log(error);
@@ -135,7 +146,7 @@ class Order extends Component {
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Username</th>
+                                    <th>Pemesan</th>
                                     <th>Alamat</th>
                                     <th>Total</th>
                                     <th>Payment</th>
@@ -146,14 +157,17 @@ class Order extends Component {
                             </thead>
                             <tbody>
 
-                                {this.state.order.map((item, index) => {
+                                {this.state.order.map((item) => {
                                     return (
-                                        <tr key={index}>
+                                        <tr key={item.id_order}>
                                             <td>{item.id_order}</td>
                                             <td>{item.username}</td>
-                                            <td>{item.jalan}</td>
+                                            <td>{item.alamat}</td>
                                             <td>{item.total}</td>
-                                            <td>{item.bukti_bayar}</td>
+                                            <td>
+                                                <img src={'http://localhost/online.shop/public/image/' + item.bukti_bayar}
+                                                    alt={item.bukti_bayar} width="150px" height="200px" />
+                                            </td>
                                             <td>
                                                 {item.detail.map((it) => {
                                                     return (
@@ -165,14 +179,14 @@ class Order extends Component {
                                             </td>
 
                                             <td>{item.status}</td>
-                                            
-                                                <button className="m-1 btn btn-sm btn-info" onClick={() => this.Accept(item.id_order)}>
-                                                    <span className="fa fa-check-circle"></span> Accept
+
+                                            <button className="m-1 btn btn-sm btn-info" onClick={() => this.Accept(item.id_order)}>
+                                                <span className="fa fa-check-circle"></span> Accept
                                             </button>
-                                                <button className="m-1 btn btn-sm btn-danger" onClick={() => this.Decline(item.id_order)}>
-                                                    <span className="fa fa-times-circle"></span> Decline
+                                            <button className="m-1 btn btn-sm btn-danger" onClick={() => this.Decline(item.id_order)}>
+                                                <span className="fa fa-times-circle"></span> Decline
                                             </button>
-                                            
+
                                         </tr>
                                     );
                                 })}

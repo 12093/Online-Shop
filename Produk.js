@@ -64,7 +64,12 @@ export default class Produk extends React.Component {
                         </a>
                         <hr></hr>
                         <Link to="/checkout">
-                            <button className="btn btn-success float-right">
+                            <button className="btn btn-light float-right" style={{ marginRight: "10px" }}>
+                                <span className=""></span>      
+                            </button>
+                        </Link>
+                        <Link to="/checkout">
+                            <button className="btn btn-success float-right" style={{ marginRight: "100px" }}>
                                 <span className="fa fa-check"></span> Checkout
                             </button>
                         </Link>

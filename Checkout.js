@@ -38,12 +38,32 @@ class Checkout extends Component {
             total: total
         });
     }
+    bind = (event) => {
+        this.setState({ [event.target.name]: event.target.value });
+    }
+    Order = (e) => {
+        e.preventDefault()  
+        let url = "http://localhost/online.shop/public/order/save"
+        let form = new FormData()
+        form.append("id_user", this.state.id_user)
+        form.append("id_alamat", this.state.id_alamat)
+        form.append("total", this.state.total)
+        form.append("product", JSON.stringify(this.state.carts))
+    
+        axios.post(url, form)
+             .then(res => {
+                alert("Order Berhasil")
+                this.setState({message: res.data.message})
+                localStorage.removeItem('cart')
+              })
+              .catch(error => {
+                    console.log(error);
+              })  
+      }    
     componentDidMount() {
         this.getCarts()
         this.get_alamat()
     }
-
-
     removeFromCart = (product) => {
         let carts = JSON.parse(localStorage.getItem('cart'));
         let cart = carts.filter(item => item.id !== product.id);
@@ -61,6 +81,7 @@ class Checkout extends Component {
             .then(response => {
                 this.setState({
                     alamat: response.data.alamat,
+                    id_user: id,
                 });
                 $("#loading").toast("hide");
             })
@@ -127,16 +148,17 @@ class Checkout extends Component {
                         </div>
                         <div className="col-md-8 order-md-1">
                             <h4 className="mb-3">Pilih Alamat Pengiriman</h4>
-                            <form className="needs-validation" noValidate>
+                            <form className="needs-validation" onSubmit={this.Order}>
 
 
                                 <div className="row">
                                     <div className="col mb-3 md-3">
                                         <label htmlFor="state">Alamat</label>
-                                        <select className="form-control" name="role" value={this.state.value} onChange={this.bind} required>
+                                        <select className="form-control" name="id_alamat" value={this.state.value} onChange={this.bind} required>
                                             {this.state.alamat.map((item) => {
                                                 return (
-                                                    <option value="{item.id}">{item.jalan}</option>
+                                                    
+                                                    <option  value={item.id_alamat}>{item.jalan}</option>
                                                 )
                                             })}
                                         </select>
